@@ -487,7 +487,7 @@ define(['lib/jquery', 'lib/uri', './core', './client', './graph'], function(
       var self = this;
       self.stopEventPolling();
       self.loadJobs().done(function() {
-        self.startEventPolling(1000, 1);
+        //self.startEventPolling(1000, 1);
       });
     },
 
@@ -498,7 +498,7 @@ define(['lib/jquery', 'lib/uri', './core', './client', './graph'], function(
       var self = this;
       self.stopEventPolling();
       self.loadJobs().done(function() {
-        self.startEventPolling(1000, -1);
+        //self.startEventPolling(1000, -1);
       });
     },
   };
