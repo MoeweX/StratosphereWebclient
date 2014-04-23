@@ -1,0 +1,46 @@
+{
+	"nodes": [
+
+	{
+		"id": 3,
+		"type": "source",
+		"pact": "Data Source",
+		"contents": "file:///path/to/input",
+		"parallelism": "1",
+		"subtasks_per_instance": "1"
+	},
+	{
+		"id": 2,
+		"type": "pact",
+		"pact": "Map",
+		"contents": "tokenize lines",
+		"parallelism": "1",
+		"subtasks_per_instance": "1",
+		"predecessors": [
+			{"id": 3}
+		]
+	},
+	{
+		"id": 1,
+		"type": "pact",
+		"pact": "Reduce",
+		"contents": "count words",
+		"parallelism": "1",
+		"subtasks_per_instance": "1",
+		"predecessors": [
+			{"id": 2}
+		]
+	},
+	{
+		"id": 0,
+		"type": "sink",
+		"pact": "Data Sink",
+		"contents": "file:///path/to/output",
+		"parallelism": "1",
+		"subtasks_per_instance": "1",
+		"predecessors": [
+			{"id": 1}
+		]
+	}
+	]
+}
