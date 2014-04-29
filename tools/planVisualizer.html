@@ -19,9 +19,11 @@
   <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/nephelefrontend.css" />
   <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/js-graph-it.css" />
   <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/pactgraphs.css" />
-  <script type="text/javascript" src="../resources/web-docs/js/jquery.js"></script>
-  <script type="text/javascript" src="../resources/web-docs/js/js-graph-it.js"></script>
-  <script type="text/javascript" src="../resources/web-docs/js/pactgraph.js"></script>
+  <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/graph.css" />
+  <script type="text/javascript" src="../resources/web-docs/js/jquery-2.1.0.js"></script>
+  <script type="text/javascript" src="../resources/web-docs/js/graphCreator.js"></script>
+  <script type="text/javascript" src="../resources/web-docs/js/d3.js" charset="utf-8"></script>
+  <script type="text/javascript" src="../resources/web-docs/js/dagre-d3.js"></script>
 <body>
   <div class="mainHeading">
     <h1><img src="../resources/web-docs/img/StratosphereLogo.png" width="326" height="100" alt="Stratosphere Logo" align="middle"/>Stratosphere Plan Visualizer</h1>
@@ -32,7 +34,12 @@
         <div align="center"><textarea id="plantext" style="width: 600px; height: 400px;"></textarea></div>
         <div align="center"; style="float: bottom;"> 
           <input id="draw_button" type="button" value="Draw"/> 
-        </div> 
+        </div>
+		<div id="attach">
+		  <svg id="svg-canvas" width=800 height=600>
+		    <g transform="translate(20, 20)"/>
+		  </svg>
+		</div>
       </div>
     </div>
     <div id="propertyCanvas" class="propertyCanvas">
@@ -47,8 +54,7 @@
 
         $('#draw_button').click(function () {
           var planData = $("textarea#plantext").val();
-          var asObject = eval('(' + planData + ')');
-          drawPactPlan(asObject, true, "../../../resources/web-docs/img/arrows/arr.gif");
+          drawGraph(planData);
         });
 
       });
