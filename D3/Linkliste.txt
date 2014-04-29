@@ -1,0 +1,22 @@
+
+Getting started with D3 graphs: 
+	http://thinkingonthinking.com/Getting-Started-With-D3/
+
+Example Graph (Mobile Patents): 
+	http://bl.ocks.org/mbostock/1153292
+
+How to handle dynamic JSON-Data: 
+	http://pothibo.com/2013/09/d3-js-how-to-handle-dynamic-json-data/
+
+D3 Informations:
+	https://github.com/mbostock/d3/wiki/Layouts (Layouts)
+
+Force Layout:
+	http://bl.ocks.org/mbostock/3750558 (Prevent movement of specified nodes)
+
+
+
+Automated Layout constructors:
+	https://github.com/cpettitt/dagre 
+		-> https://github.com/cpettitt/dagre-d3
+		-> http://www.daviddurman.com/automatic-graph-layout-with-jointjs-and-dagre.html (with interaction??)
