@@ -61,8 +61,8 @@ function useExample() {
 }
 
 function loadJsonToDagre(data){
+
 	var g = new dagreD3.Digraph();
-		
 	for (var i in data.nodes) {
 		var el = data.nodes[i];
 		g.addNode(el.id, { label: el.pact } );

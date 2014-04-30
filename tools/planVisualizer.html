@@ -35,11 +35,6 @@
         <div align="center"; style="float: bottom;"> 
           <input id="draw_button" type="button" value="Draw"/> 
         </div>
-		<div id="attach">
-		  <svg id="svg-canvas" width=800 height=600>
-		    <g transform="translate(20, 20)"/>
-		  </svg>
-		</div>
       </div>
     </div>
     <div id="propertyCanvas" class="propertyCanvas">
@@ -47,14 +42,16 @@
     </div>
     <script type="text/javascript">
     <!--
-      var maxColumnWidth = 350;
-      var minColumnWidth = 150;
 
       $(document).ready(function() {
 
         $('#draw_button').click(function () {
           var planData = $("textarea#plantext").val();
-          drawGraph(planData);
+          $("#mainCanvas").empty();
+          var svgElement = "<div id=\"attach\"><svg id=\"svg-canvas\" width=500 height=500><g transform=\"translate(20, 20)\"/></svg></div>";
+          $("#mainCanvas").append(svgElement);
+          var asObject = eval('(' + planData + ')');
+          drawGraph(asObject);
         });
 
       });
