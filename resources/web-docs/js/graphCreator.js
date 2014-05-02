@@ -25,8 +25,7 @@ function drawGraph(data){
      		svg.select("g")
      			.attr("transform", "translate(" + ev.translate + ") scale(" + ev.scale + ")");
   		}));
-	
-}
+  	}
 
 //Creates the dagreD3 object
 //Responsible for adding nodes and edges
@@ -35,18 +34,52 @@ function loadJsonToDagre(data){
 	for (var i in data.nodes) {
 		var el = data.nodes[i];
 		
-		if (el.contents == "") {
-			var labelValue = el.pact;
-		} else {
-		 	var labelValue = el.pact + " - " + el.contents;
-		}
-		g.addNode(el.id, { label: labelValue } );
+		g.addNode(el.id, { label: createLabelNode(el) } );
 		if (el.predecessors != null) {
 			for (var j in el.predecessors) {
-				g.addEdge(null, el.predecessors[j].id, el.id);	
+				g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
 			}
 		}
 	}
 	
 	return g;
+}
+
+function createLabelEdge(el) {
+	return el.ship_strategy;
+}
+
+function createLabelNode(el) {
+		var labelValue = "<div class=\"panel panel-primary\">";
+		//Nodename
+		if (el.contents == "") {
+			labelValue += "<div class=\"panel-heading\">" + el.pact + "</div>";
+		} else {
+			//make sure that name does not contain a < (because of html)
+			var stepName = el.contents
+			if (stepName.charAt(0) == "<") {
+				stepName = stepName.replace("<", "&lt;");
+				stepName = stepName.replace(">", "&gt;");
+			}
+		 	labelValue += "<div class=\"panel-heading\">" + el.pact + " - " + stepName + "</div>";
+		}
+		//Table
+		labelValue += "<div><table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+		
+		for (var z in el.global_properties) {
+			labelValue += tableRow(el.global_properties[z].name, el.global_properties[z].value);
+		}
+		
+		labelValue += "</table></div>";
+		
+		//close panel
+		labelValue += "</div>";
+				
+		return labelValue;
+}
+
+function tableRow(nameX, valueX) {
+	var htmlCode = "";
+	htmlCode += "<tr><td>" + nameX + "</td><td>" + valueX + "</td></tr>";
+	return htmlCode;
 }
