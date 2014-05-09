@@ -112,9 +112,46 @@ function showProperties(nodeID) {
 	$("#propertyCanvas").empty();
 	node = searchForNode(nodeID);
 	var phtml = "<div><h3>Properties of "+ shortenString(node.contents) + " - ID = " + nodeID + "</h3>";
-	phtml += "<div><table class=\"table\"><tr><th><h4>Pact Properties</h4></th><th><h4>Global Data Properties</h4></th><th><h4>Local Data Properties</h4></th><th><h4>Size Estimates</h4></th><th><h4>Cost Estimates</h4></th></tr>"
+	phtml += "<div class=\"row\">";
 	
+	phtml += "<div class=\"col-md-2\"><h4>Pact Properties</h4>";
+	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	phtml += tableRow("Operator", (node.driver_strategy == undefined ? "None" : node.driver_strategy));
+	phtml += tableRow("Parallelism", (node.parallelism == undefined ? "None" : node.parallelism));
+	phtml += tableRow("Subtasks-per-instance", (node.subtasks_per_instance == undefined ? "None" : node.subtasks_per_instance));
+	phtml += "</table></div>";
 	
+	phtml += "<div class=\"col-md-2\"><h4>Global Data Properties</h4>";
+	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	for (var i = 0; i < node.global_properties.length; i++) {
+    	var prop = node.global_properties[i];
+    	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+    }
+	phtml += "</table></div>";
+
+	phtml += "<div class=\"col-md-2\"><h4>Local Data Properties</h4>";
+	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	for (var i = 0; i < node.local_properties.length; i++) {
+		var prop = node.local_properties[i];
+     	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+    }
+	phtml += "</table></div>";
+	
+	phtml += "<div class=\"col-md-2\"><h4>Size Estimates</h4>";
+	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	for (var i = 0; i < node.estimates.length; i++) {
+		var prop = node.estimates[i];
+		phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+	}
+	phtml += "</table></div>";
+	
+	phtml += "<div class=\"col-md-2\"><h4>Cost Estimates</h4>";	
+	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	for (var i = 0; i < node.costs.length; i++) {
+    	var prop = node.costs[i];
+    	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+	}
+	phtml += "</table></div>";
 	
 	phtml += "</div></div>";
 	$("#propertyCanvas").append(phtml);
