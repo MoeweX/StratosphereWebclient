@@ -7,8 +7,12 @@ $(document).ready(function ()
 	
 });
 
+//The current JSON file
+var JSONData; 
+
 //Renders and draws the graph
 function drawGraph(data){
+	JSONData = data;
 	var g = loadJsonToDagre(data);
 
 	var renderer = new dagreD3.Renderer()
@@ -18,7 +22,8 @@ function drawGraph(data){
 	layout = renderer.layout(layout).run(g, d3.select("svg g"));
 	
 	 var svg = d3.select("svg")
-	 	.attr("width", layout.graph().width + 40)
+	 	//.attr("width", layout.graph().width + 40)
+	 	.attr("width", $(document).width() - 10)
 	 	//.attr("height", layout.graph().height + 40)
 	 	.call(d3.behavior.zoom().on("zoom", function() {
      		var ev = d3.event;
@@ -64,7 +69,7 @@ function createLabelEdge(el) {
 
 //creates the label of a node
 function createLabelNode(el) {
-	var labelValue = "<div class\"myPanel\" data=\"" + el.id + "\">";
+	var labelValue = "<div>";
 	//set color of panel
 	if (el.pact == "Data Source") {
 		labelValue += "<div class=\"panel panel-success\">";
@@ -74,20 +79,14 @@ function createLabelNode(el) {
 		labelValue += "<div class=\"panel panel-info\">";
 	}
 	//Nodename
+	labelValue += "<div class=\"panel-heading\"><a class=\"clickLabel\" nodeID=\""+el.id+"\" href=\"#\"><h4 style=\"text-align: center\">" + el.pact + "</h4></a>";
 	if (el.contents == "") {
-		labelValue += "<div class=\"panel-heading\"><h4 style=\"text-align: center\">" + el.pact + "</h4></div>";
+		labelValue += "</div>";
 	} else {
 		var stepName = el.contents;
-		//shorten name to <= 30 letters
-		if (stepName.length > 30) {
-			stepName = shortenString(stepName);
-		}
-		//make sure that name does not contain a < (because of html)
-		if (stepName.charAt(0) == "<") {
-			stepName = stepName.replace("<", "&lt;");
-			stepName = stepName.replace(">", "&gt;");
-		}
-	 	labelValue += "<div class=\"panel-heading\"><h4 style=\"text-align: center\">" + el.pact + "</h4><h5 style=\"text-align: center\">" + stepName + "</h5></div>";
+		//clean stepName
+		stepName = shortenString(stepName);
+	 	labelValue += "<h5 style=\"text-align: center\">" + stepName + "</h5></div>";
 	}
 	//Table
 	labelValue += "<div><table class=\"table\"><tr><th>name</th><th>value</th></tr>";
@@ -99,9 +98,7 @@ function createLabelNode(el) {
 	if (el.driver_strategy != undefined) {
 		labelValue += tableRow("Driver Strategy", el.driver_strategy);
 	}
-	
-	labelValue += "<tr><a id=\""+el.id+"_info\" class=\"cancel btn btn-info\" href=\"#\" job=\""+el.id+"\" style=\"margin-bottom: 0.5cm\">more infos</a></td>";
-	
+		
 	labelValue += "</table></div>";
 	
 	//close panel
@@ -110,16 +107,36 @@ function createLabelNode(el) {
 	return labelValue;
 }
 
+//presents properties for a given nodeID in the propertyCanvas
+function showProperties(nodeID) {
+	$("#propertyCanvas").empty();
+	node = searchForNode(nodeID);
+	var phtml = "<div><h3>Properties of "+ shortenString(node.contents) + " - ID = " + nodeID + "</h3>";
+	phtml += "<div><table class=\"table\"><tr><th><h4>Pact Properties</h4></th><th><h4>Global Data Properties</h4></th><th><h4>Local Data Properties</h4></th><th><h4>Size Estimates</h4></th><th><h4>Cost Estimates</h4></th></tr>"
+	
+	
+	
+	phtml += "</div></div>";
+	$("#propertyCanvas").append(phtml);
+	
+}
+
+//searches in the global JSONData for the node with the given id
+function searchForNode(nodeID) {
+	for (var i in JSONData.nodes) {
+		var el = JSONData.nodes[i];
+		if (el.id == nodeID) {
+			return el;
+		}
+	}
+}
+
 /**
  * More Infos from a job
  */
-$(document).on("click", ".cancel", function() {
-	var id = $(this).attr("job");
-	//$.ajax({ url : "jobsInfo?get=cancel&job=" + id, cache: false, type : "GET",
-	  //  success : function(json) {
-	    //}
-	//});
-	alert("more infos for button " + id);
+$(document).on("click", ".clickLabel", function() {
+	var id = $(this).attr("nodeID");
+	showProperties(id);
 });
 
 //creates a row for a table with two collums
@@ -137,5 +154,10 @@ function shortenString(s) {
 		lastLength = s.length;
 		s = s.substring(s.indexOf("/")+1, s.length);
 	} while (s.indexOf("/") != -1 && s.length > 30 && lastLength != s.length)
+	//make sure that name does not contain a < (because of html)
+	if (s.charAt(0) == "<") {
+			s = s.replace("<", "&lt;");
+			s = s.replace(">", "&gt;");
+	}
 	return s;
 }
