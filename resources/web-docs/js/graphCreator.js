@@ -100,6 +100,8 @@ function createLabelNode(el) {
 		labelValue += tableRow("Driver Strategy", el.driver_strategy);
 	}
 	
+	labelValue += "<tr><a id=\""+el.id+"_info\" class=\"cancel btn btn-info\" href=\"#\" job=\""+el.id+"\" style=\"margin-bottom: 0.5cm\">more infos</a></td>";
+	
 	labelValue += "</table></div>";
 	
 	//close panel
@@ -107,6 +109,18 @@ function createLabelNode(el) {
 			
 	return labelValue;
 }
+
+/**
+ * More Infos from a job
+ */
+$(document).on("click", ".cancel", function() {
+	var id = $(this).attr("job");
+	//$.ajax({ url : "jobsInfo?get=cancel&job=" + id, cache: false, type : "GET",
+	  //  success : function(json) {
+	    //}
+	//});
+	alert("more infos for button " + id);
+});
 
 //creates a row for a table with two collums
 function tableRow(nameX, valueX) {
