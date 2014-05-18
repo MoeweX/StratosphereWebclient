@@ -37,7 +37,7 @@ function processUpload()
 {
 	  console.log("processUpload");
 
-  var filename = $('#upload_file_input').val();
+  var filename = $('#upload_file_input').attr('value');
   var len = filename.length;
   if (len == 0) {
     showUploadError("Please select a file.");
@@ -87,26 +87,24 @@ function toggleCheckboxes(box)
 function showPreviewPlan(data)
 {
 	console.log("showPreviewPlan");
-	//TODO check again the stuff below
-//  // check whether this one is still selected
-//  var active = $('.jobItemCheckbox:checked');
-//  var id = active.parentsUntil('.jobListItem').parent().attr('id').substr(4);
-//  
-//  if (pactPlanRequested == id) {
-//    if (data == undefined || data.jobname == undefined || data.jobname != pactPlanRequested || data.plan == undefined) {
-//      pactPlanRequested = 0;
-//    }
-//
-//	if(data.description != undefined) {
-//		$('#planDescription').html(data.description);
-//	}
-	
+  // check whether this one is still selected
+  var active = $('.jobItemCheckbox:checked');
+  var id = active.parentsUntil('.jobListItem').parent().attr('id').substr(4);
+  
+  if (pactPlanRequested == id) {
+    if (data == undefined || data.jobname == undefined || data.jobname != pactPlanRequested || data.plan == undefined) {
+      pactPlanRequested = 0;
+    }
+
+if(data.description != undefined) {
+$('#planDescription').html(data.description);
+}
 	$("#mainCanvas").empty();
     var svgElement = "<div id=\"attach\"><svg id=\"svg-canvas\" width=500 height=500><g transform=\"translate(20, 20)\"/></svg></div>";
     $("#mainCanvas").append(svgElement);
     drawGraph(data.plan);
     pactPlanRequested = 0;
-//  }
+  }
 }
 
 /*
@@ -133,7 +131,7 @@ function deleteJob(id)
  */
 function createJobList(data)
 {
-	console.log("createJobList ");
+	console.log("createJobList");
   var markup = "";
   
   var lines = data.split("\n");
@@ -163,7 +161,7 @@ function createJobList(data)
     }
     
     
-    markup += '<div id="job_' + name + '" class="jobListItem"><table class="table"><tr>';
+    markup += '<div id="job_' + name + '" class="jobListItem"><table class="layoutTable" width="100%"><tr>';
     markup += '<td width="30px;"><input class="jobItemCheckbox" type="checkbox"></td>';
     markup += '<td><p class="jobListItemName">' + name + '</p></td>';
     markup += '<td><p class="jobListItemDate">' + date + '</p></td>';
@@ -172,7 +170,7 @@ function createJobList(data)
   }
   
   // add the contents
-  $('#jobsContents').html(markup); 
+  $('#jobsContents').attr('innerHTML', markup);
   
   // register the event handler that triggers the delete when the delete icon is clicked
   $('.jobItemDeleteIcon').click(function () { deleteJob($(this).parentsUntil('.jobListItem').parent().attr('id')); } );
@@ -197,7 +195,7 @@ function runJob ()
    var jobName = job.parentsUntil('.jobListItem').parent().attr('id').substr(4);
    var showPlan = $('#showPlanCheck').is(':checked');
    var suspendPlan = $('#suspendJobDuringPlanCheck').is(':checked');
-   var args = $('#commandLineArgsField').attr('value'); //TODO? Replace with .val() ?
+   var args = $('#commandLineArgsField').attr('value');
    
    var url = "runJob?" + $.param({ action: "submit", job: jobName, arguments: args, show_plan: showPlan, suspend: suspendPlan});
    
@@ -215,7 +213,7 @@ $(document).ready(function ()
   $('#run_error_text').fadeOut("fast");
   
   // register the event listener that keeps the hidden file form and the text fied in sync
-  $('#upload_file_input').change(function () { $('#upload_file_name_text').val($(this).val()) } );
+  $('#upload_file_input').change(function () { $('#upload_file_name_text').attr('value', $(this).attr('value')) } );
   
   // register the event handler for the upload button
   $('#upload_submit_button').click(processUpload);
@@ -226,4 +224,4 @@ $(document).ready(function ()
   
   // start the ajax load of the jobs
   loadJobList();
-}); 
+});

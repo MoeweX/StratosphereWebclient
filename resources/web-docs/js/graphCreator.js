@@ -19,6 +19,7 @@ function drawGraph(data){
 	var layout = dagreD3.layout()
 	                    .nodeSep(20)
 	                    .rankDir("LR");
+	//TODO Proplem, do not know why :(
 	layout = renderer.layout(layout).run(g, d3.select("svg g"));
 	
 	 var svg = d3.select("svg")
