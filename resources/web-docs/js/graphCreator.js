@@ -61,10 +61,16 @@ function loadJsonToDagre(data){
 
 //create a label of an edge
 function createLabelEdge(el) {
-	var labelValue = el.ship_strategy;
+	var labelValue;
+	if (el.ship_strategy != null) {
+		labelValue = el.ship_strategy;
+	} else {
+		labelValue = "";
+	}
 	if (el.local_strategy != undefined) {
 		labelValue += ", " + el.local_strategy;
 	}
+		console.log(labelValue);
 	return labelValue;
 }
 
@@ -90,7 +96,7 @@ function createLabelNode(el) {
 	 	labelValue += "<h5 style=\"text-align: center\">" + stepName + "</h5></div>";
 	}
 	//Table
-	labelValue += "<div><table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	labelValue += "<div><table class=\"table\"></tr>";
 
 	if (el.parallelism != "") {
 		labelValue += tableRow("Parallelism", el.parallelism);
@@ -104,7 +110,7 @@ function createLabelNode(el) {
 	
 	//close panel
 	labelValue += "</div></div>";
-			
+		console.log(labelValue);	
 	return labelValue;
 }
 
