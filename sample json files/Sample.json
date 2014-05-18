@@ -17,6 +17,7 @@
 		"parallelism": "1",
 		"subtasks_per_instance": "1",
 		"predecessors": [
+			{"id": 2},
 			{"id": 3}
 		]
 	},

@@ -19,12 +19,12 @@ function drawGraph(data){
 	var layout = dagreD3.layout()
 	                    .nodeSep(20)
 	                    .rankDir("LR");
-	//TODO Proplem, do not know why :(
+
 	layout = renderer.layout(layout).run(g, d3.select("svg g"));
 	
 	 var svg = d3.select("svg")
 	 	//.attr("width", layout.graph().width + 40)
-	 	.attr("width", $(document).width() - 10)
+	 	.attr("width", $(document).width() - 15)
 	 	//.attr("height", layout.graph().height + 40)
 	 	.call(d3.behavior.zoom().on("zoom", function() {
      		var ev = d3.event;
@@ -61,16 +61,14 @@ function loadJsonToDagre(data){
 
 //create a label of an edge
 function createLabelEdge(el) {
-	var labelValue;
+	var labelValue = "<div style=\"font-size: 120%; border:2px solid\">";
 	if (el.ship_strategy != null) {
-		labelValue = el.ship_strategy;
-	} else {
-		labelValue = "";
-	}
+		labelValue += el.ship_strategy;
+	} 
 	if (el.local_strategy != undefined) {
 		labelValue += ", " + el.local_strategy;
 	}
-		console.log(labelValue);
+	labelValue += "</div>";
 	return labelValue;
 }
 
@@ -96,7 +94,7 @@ function createLabelNode(el) {
 	 	labelValue += "<h5 style=\"text-align: center\">" + stepName + "</h5></div>";
 	}
 	//Table
-	labelValue += "<div><table class=\"table\"></tr>";
+	labelValue += "<div class=\"panel-body\"><table class=\"table\"></tr>";
 
 	if (el.parallelism != "") {
 		labelValue += tableRow("Parallelism", el.parallelism);
@@ -110,11 +108,11 @@ function createLabelNode(el) {
 	
 	//close panel
 	labelValue += "</div></div>";
-		console.log(labelValue);	
 	return labelValue;
 }
 
 //presents properties for a given nodeID in the propertyCanvas
+//TODO Check if null
 function showProperties(nodeID) {
 	$("#propertyCanvas").empty();
 	node = searchForNode(nodeID);
