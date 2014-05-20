@@ -19,8 +19,15 @@ function drawGraph(data){
 	var layout = dagreD3.layout()
 	                    .nodeSep(20)
 	                    .rankDir("LR");
-
-	layout = renderer.layout(layout).run(g, d3.select("svg g"));
+	
+	//TODO improve this in a way that drawGraph gets the id of the svg element and the json data.
+	//new solution (with selection of id)
+	svgElement = d3.select("#svg-canvas");
+	console.log(svgElement);
+	layout = renderer.layout(layout).run(g, svgElement);
+	
+	//old solution (working) TODO remove when not needed anymore
+//	layout = renderer.layout(layout).run(g, d3.select("svg g"));
 	
 	 var svg = d3.select("svg")
 	 	//.attr("width", layout.graph().width + 40)
@@ -74,6 +81,7 @@ function createLabelEdge(el) {
 
 //creates the label of a node
 function createLabelNode(el) {
+	
 	var labelValue = "<div>";
 	//set color of panel
 	if (el.pact == "Data Source") {
@@ -93,6 +101,13 @@ function createLabelNode(el) {
 		stepName = shortenString(stepName);
 	 	labelValue += "<h5 style=\"text-align: center\">" + stepName + "</h5></div>";
 	}
+	
+	//If this node is a "workset" we need a different panel-body
+	if (el.workset != null) {
+		labelValue += extendLabelNodeForIteration();
+		return labelValue;
+	}
+	
 	//Table
 	labelValue += "<div class=\"panel-body\"><table class=\"table\"></tr>";
 
@@ -111,8 +126,14 @@ function createLabelNode(el) {
 	return labelValue;
 }
 
+//Extends the label of a node with an additional svg Element to present the workset iteration.
+function extendLabelNodeForIteration() {
+	var labelValue = "<div id=\"attach\"><svg id=\"svg-canvas\" width=100 height=100><g transform=\"translate(20, 20)\"/></svg></div>";
+	return labelValue;
+}
+
 //presents properties for a given nodeID in the propertyCanvas
-//TODO Check if null
+//TODO Check if null (BUG)
 function showProperties(nodeID) {
 	$("#propertyCanvas").empty();
 	node = searchForNode(nodeID);
