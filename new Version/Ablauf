@@ -1,0 +1,7 @@
+1. Bau workset graphen
+2. Bau normalen graphen und setzte die svg Elemente in den Workset nodes auf größe der workset graphen
+
+
+//TODO dafür
+Füge bei searchNode Funktionalität zur Suche von Nodes in step_function ein
+	*löse auch bug dort gleich mal mit

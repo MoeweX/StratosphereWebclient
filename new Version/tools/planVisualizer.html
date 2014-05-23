@@ -48,10 +48,10 @@
         $('#draw_button').click(function () {
           var planData = $("textarea#plantext").val();
           $("#mainCanvas").empty();
-          var svgElement = "<div id=\"attach\"><svg id=\"svg-canvas\" width=500 height=500><g transform=\"translate(20, 20)\"/></svg></div>";
+          var svgElement = "<div id=\"attach\"><svg id=\"svg-main\" width=500 height=500><g transform=\"translate(20, 20)\"/></svg></div>";
           $("#mainCanvas").append(svgElement);
           var asObject = eval('(' + planData + ')');
-          drawGraph(asObject);
+          drawGraph(asObject, "#svg-main");
         });
 
       });

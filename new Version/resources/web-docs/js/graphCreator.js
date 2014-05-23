@@ -9,37 +9,80 @@ $(document).ready(function ()
 
 //The current JSON file
 var JSONData; 
+//The informations for the iterations
+var iterationIds = new Array();
+var iterationGraphs = new Array();
+var iterationWidths = new Array();
+var iterationHeights = new Array();
 
 //Renders and draws the graph
-function drawGraph(data){
+function drawGraph(data, svgID){
 	JSONData = data;
+	
+	//First step: precompute all iteration graphs
+	//find all iterations
+	iterationNodes = searchForIterationNodes();
+	
+	//add the graphs and the sizes to the arrays
+	if (iterationNodes != null) {
+		for (var i in iterationNodes) {
+			var itNode = iterationNodes[i];
+			iterationIds.push(itNode.id);
+			var g0 = loadJsonToDagre(itNode);
+			iterationGraphs.push(g0);
+		    var r = new dagreD3.Renderer();
+		   	var l = dagreD3.layout()
+		                 .nodeSep(20)
+		                 .rankDir("LR");
+		    l = r.layout(l).run(g0, d3.select("#svg-main"));
+		
+		   	iterationWidths.push(l._value.width);
+			iterationHeights.push(l._value.height);
+			
+			//Clean svg
+			$("#svg-main g").empty();
+		}
+	}
+		
+	//Continue normal
 	var g = loadJsonToDagre(data);
-
-	var renderer = new dagreD3.Renderer()
+	var selector = svgID + " g";
+	var renderer = new dagreD3.Renderer();
 	var layout = dagreD3.layout()
 	                    .nodeSep(20)
 	                    .rankDir("LR");
 	
-	//TODO improve this in a way that drawGraph gets the id of the svg element and the json data.
 	//new solution (with selection of id)
-	svgElement = d3.select("#svg-canvas");
-	console.log(svgElement);
+	var svgElement = d3.select(selector);
 	layout = renderer.layout(layout).run(g, svgElement);
 	
 	//old solution (working) TODO remove when not needed anymore
 //	layout = renderer.layout(layout).run(g, d3.select("svg g"));
 	
-	 var svg = d3.select("svg")
+	 var svg = d3.select("#svg-main")
 	 	//.attr("width", layout.graph().width + 40)
 	 	.attr("width", $(document).width() - 15)
 	 	//.attr("height", layout.graph().height + 40)
-	 	.call(d3.behavior.zoom().on("zoom", function() {
+	 	.call(d3.behavior.zoom("#svg-main").on("zoom", function() {
      		var ev = d3.event;
-     		svg.select("g")
+     		svg.select("#svg-main g")
      			.attr("transform", "translate(" + ev.translate + ") scale(" + ev.scale + ")");
   		}));
   		
+  	//TODO search for svgs and draw graphs, in this case id=19 --> Change
+  		// This should now draw the precomputed graphs in the svgs... . 
+  		var workset = searchForNode(19);
+  		g = loadJsonToDagre(workset);
+  		renderer = new dagreD3.Renderer();
+  		layout = dagreD3.layout()
+	                    .nodeSep(20)
+	                    .rankDir("LR");
+	    selector = "#svg-19 g";
+	    svgElement = d3.select(selector);
+	    layout = renderer.layout(layout).run(g, svgElement);
+  	
   	activateClickEvents();
+  	
   	}
   	
 function activateClickEvents() {
@@ -48,17 +91,32 @@ function activateClickEvents() {
 	});	
 }
 
-//Creates the dagreD3 object
+//Creates the dagreD3 graph object
 //Responsible for adding nodes and edges
 function loadJsonToDagre(data){
 	var g = new dagreD3.Digraph();
-	for (var i in data.nodes) {
-		var el = data.nodes[i];
-		
-		g.addNode(el.id, { label: createLabelNode(el) } );
-		if (el.predecessors != null) {
-			for (var j in el.predecessors) {
-				g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
+	if (data.nodes != null) {
+		console.log("Normal Json Data");
+		for (var i in data.nodes) {
+			var el = data.nodes[i];
+			
+			g.addNode(el.id, { label: createLabelNode(el) } );
+			if (el.predecessors != null) {
+				for (var j in el.predecessors) {
+					g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
+				}
+			}
+		}
+	} else {
+		console.log("Iteration Json Data");
+		for (var i in data.step_function) {
+			var el = data.step_function[i];
+			
+			g.addNode(el.id, { label: createLabelNode(el) } );
+			if (el.predecessors != null) {
+				for (var j in el.predecessors) {
+					g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
+				}
 			}
 		}
 	}
@@ -104,7 +162,7 @@ function createLabelNode(el) {
 	
 	//If this node is a "workset" we need a different panel-body
 	if (el.workset != null) {
-		labelValue += extendLabelNodeForIteration();
+		labelValue += extendLabelNodeForIteration(el.id);
 		return labelValue;
 	}
 	
@@ -127,8 +185,17 @@ function createLabelNode(el) {
 }
 
 //Extends the label of a node with an additional svg Element to present the workset iteration.
-function extendLabelNodeForIteration() {
-	var labelValue = "<div id=\"attach\"><svg id=\"svg-canvas\" width=100 height=100><g transform=\"translate(20, 20)\"/></svg></div>";
+function extendLabelNodeForIteration(id) {
+	var svgID = "svg-" + id;
+
+	//Find out the position of the iterationElement in the iterationGraphArray
+	var index = iterationIds.indexOf(id);
+	//Set the size and the width of the svg Element as precomputetd
+	var width = iterationWidths[index] + 40;
+	var height = iterationHeights[index] + 40;
+	
+	console.log(height);
+	var labelValue = "<div id=\"attach\"><svg id=\""+svgID+"\" width="+width+" height="+height+"><g transform=\"translate(20, 20)\"/></svg></div>";
 	return labelValue;
 }
 
@@ -192,6 +259,17 @@ function searchForNode(nodeID) {
 			return el;
 		}
 	}
+}
+
+function searchForIterationNodes() {
+	var itN = new Array();
+	for (var i in JSONData.nodes) {
+		var el = JSONData.nodes[i];
+		if (el.step_function != null) {
+			itN.push(el);
+		}
+	}
+	return itN;
 }
 
 /**
