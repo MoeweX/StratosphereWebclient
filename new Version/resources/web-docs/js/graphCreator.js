@@ -67,19 +67,18 @@ function drawGraph(data, svgID){
      			.attr("transform", "translate(" + ev.translate + ") scale(" + ev.scale + ")");
   		}));
   		
-  		// This should now draw the precomputed graphs in the svgs... . 
-  		
-  		for (var i in iterationIds) {
-  			var workset = searchForNode(iterationIds[i]);
-	  		g = loadJsonToDagre(workset);
-	  		renderer = new dagreD3.Renderer();
-	  		layout = dagreD3.layout()
-		                    .nodeSep(20)
-		                    .rankDir("LR");
-		    selector = "#svg-"+iterationIds[i]+" g";
-		    svgElement = d3.select(selector);
-		    layout = renderer.layout(layout).run(g, svgElement);
-  		}
+	// This should now draw the precomputed graphs in the svgs... . 
+	
+	for (var i in iterationIds) {
+		var workset = searchForNode(iterationIds[i]);
+		renderer = new dagreD3.Renderer();
+		layout = dagreD3.layout()
+                    .nodeSep(20)
+                    .rankDir("LR");
+	    selector = "#svg-"+iterationIds[i]+" g";
+	    svgElement = d3.select(selector);
+	    layout = renderer.layout(layout).run(iterationGraphs[i], svgElement);
+	}
   		
   	
 //  	activateClickEvents();
@@ -95,16 +94,28 @@ function drawGraph(data, svgID){
 //Creates the dagreD3 graph object
 //Responsible for adding nodes and edges
 function loadJsonToDagre(data){
+	
+	//stores all nodes that have been added so far
+	var existingNodes = new Array;
+	
+	//stores all remaining Eges (predecessors did not exist from the beginning)
+	var remainingEdges = new Array;
+	
 	var g = new dagreD3.Digraph();
+	
 	if (data.nodes != null) {
 		console.log("Normal Json Data");
 		for (var i in data.nodes) {
 			var el = data.nodes[i];
-			
 			g.addNode(el.id, { label: createLabelNode(el) } );
+			existingNodes.push(el.id);
 			if (el.predecessors != null) {
 				for (var j in el.predecessors) {
-					g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
+					if (existingNodes.indexOf(el.predecessors[j].id) != -1) {
+						g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
+					} else {
+						console.log("Not in graph yet: " + el.predecessors[j].id);
+					}
 				}
 			}
 		}
@@ -112,11 +123,15 @@ function loadJsonToDagre(data){
 		console.log("Iteration Json Data");
 		for (var i in data.step_function) {
 			var el = data.step_function[i];
-			
 			g.addNode(el.id, { label: createLabelNode(el) } );
+			existingNodes.push(el.id);
 			if (el.predecessors != null) {
 				for (var j in el.predecessors) {
-					g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
+					if (existingNodes.indexOf(el.predecessors[j].id) != -1) {
+						g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
+					} else {
+						console.log("Not in graph yet: " + el.predecessors[j].id);	
+					}
 				}
 			}
 		}
@@ -161,8 +176,8 @@ function createLabelNode(el) {
 	 	labelValue += "<h5 style=\"text-align: center\">" + stepName + "</h5></div>";
 	}
 	
-	//If this node is a "workset" we need a different panel-body
-	if (el.workset != null) {
+	//If this node is a "iteration" we need a different panel-body
+	if (el.step_function != null) {
 		labelValue += extendLabelNodeForIteration(el.id);
 		return labelValue;
 	}
@@ -195,7 +210,6 @@ function extendLabelNodeForIteration(id) {
 	var width = iterationWidths[index] + 40;
 	var height = iterationHeights[index] + 40;
 	
-	console.log(height);
 	var labelValue = "<div id=\"attach\"><svg id=\""+svgID+"\" width="+width+" height="+height+"><g transform=\"translate(20, 20)\"/></svg></div>";
 	return labelValue;
 }
