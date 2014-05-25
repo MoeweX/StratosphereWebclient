@@ -20,10 +20,11 @@ function drawGraph(data, svgID){
 	JSONData = data;
 	
 	//First step: precompute all iteration graphs
+	
 	//find all iterations
 	iterationNodes = searchForIterationNodes();
 	
-	//add the graphs and the sizes to the arrays
+	//add the graphs and the sizes + Ids to the arrays
 	if (iterationNodes != null) {
 		for (var i in iterationNodes) {
 			var itNode = iterationNodes[i];
@@ -56,9 +57,6 @@ function drawGraph(data, svgID){
 	var svgElement = d3.select(selector);
 	layout = renderer.layout(layout).run(g, svgElement);
 	
-	//old solution (working) TODO remove when not needed anymore
-//	layout = renderer.layout(layout).run(g, d3.select("svg g"));
-	
 	 var svg = d3.select("#svg-main")
 	 	//.attr("width", layout.graph().width + 40)
 	 	.attr("width", $(document).width() - 15)
@@ -69,27 +67,30 @@ function drawGraph(data, svgID){
      			.attr("transform", "translate(" + ev.translate + ") scale(" + ev.scale + ")");
   		}));
   		
-  	//TODO search for svgs and draw graphs, in this case id=19 --> Change
   		// This should now draw the precomputed graphs in the svgs... . 
-  		var workset = searchForNode(19);
-  		g = loadJsonToDagre(workset);
-  		renderer = new dagreD3.Renderer();
-  		layout = dagreD3.layout()
-	                    .nodeSep(20)
-	                    .rankDir("LR");
-	    selector = "#svg-19 g";
-	    svgElement = d3.select(selector);
-	    layout = renderer.layout(layout).run(g, svgElement);
+  		
+  		for (var i in iterationIds) {
+  			var workset = searchForNode(iterationIds[i]);
+	  		g = loadJsonToDagre(workset);
+	  		renderer = new dagreD3.Renderer();
+	  		layout = dagreD3.layout()
+		                    .nodeSep(20)
+		                    .rankDir("LR");
+		    selector = "#svg-"+iterationIds[i]+" g";
+		    svgElement = d3.select(selector);
+		    layout = renderer.layout(layout).run(g, svgElement);
+  		}
+  		
   	
-  	activateClickEvents();
+//  	activateClickEvents();
   	
   	}
   	
-function activateClickEvents() {
-	$("#myPanel").on("click", function() {
-		alert("You clicked" + $(this).attr("data"));
-	});	
-}
+//function activateClickEvents() {
+//	$("#myPanel").on("click", function() {
+//		alert("You clicked" + $(this).attr("data"));
+//	});	
+//}
 
 //Creates the dagreD3 graph object
 //Responsible for adding nodes and edges
@@ -200,7 +201,6 @@ function extendLabelNodeForIteration(id) {
 }
 
 //presents properties for a given nodeID in the propertyCanvas
-//TODO Check if null (BUG)
 function showProperties(nodeID) {
 	$("#propertyCanvas").empty();
 	node = searchForNode(nodeID);
@@ -216,33 +216,49 @@ function showProperties(nodeID) {
 	
 	phtml += "<div class=\"col-md-2\"><h4>Global Data Properties</h4>";
 	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
-	for (var i = 0; i < node.global_properties.length; i++) {
-    	var prop = node.global_properties[i];
-    	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
-    }
+	if (node.global_properties != null) {
+		for (var i = 0; i < node.global_properties.length; i++) {
+	    	var prop = node.global_properties[i];
+	    	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+	    }
+	} else {
+		phtml += tableRow("Global Properties", "None");
+	}
 	phtml += "</table></div>";
 
 	phtml += "<div class=\"col-md-2\"><h4>Local Data Properties</h4>";
 	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
-	for (var i = 0; i < node.local_properties.length; i++) {
-		var prop = node.local_properties[i];
-     	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
-    }
+	if (node.local_properties != null) {
+		for (var i = 0; i < node.local_properties.length; i++) {
+			var prop = node.local_properties[i];
+	     	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+	    }
+	} else {
+		phtml += tableRow("Local Properties", "None");
+	}
 	phtml += "</table></div>";
 	
 	phtml += "<div class=\"col-md-2\"><h4>Size Estimates</h4>";
 	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
-	for (var i = 0; i < node.estimates.length; i++) {
-		var prop = node.estimates[i];
-		phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+	if (node.estimates != null) {
+		for (var i = 0; i < node.estimates.length; i++) {
+			var prop = node.estimates[i];
+			phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+		}
+	} else {
+		phtml += tableRow("Size Estimates", "None");
 	}
 	phtml += "</table></div>";
 	
 	phtml += "<div class=\"col-md-2\"><h4>Cost Estimates</h4>";	
 	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
-	for (var i = 0; i < node.costs.length; i++) {
-    	var prop = node.costs[i];
-    	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+	if (node.costs != null) {
+		for (var i = 0; i < node.costs.length; i++) {
+	    	var prop = node.costs[i];
+	    	phtml += tableRow((prop.name == undefined ? '(unknown)' : prop.name),(prop.value == undefined ? "(none)" : prop.value));
+		}
+	} else {
+		phtml += tableRow("Cost Estimates", "None");
 	}
 	phtml += "</table></div>";
 	
