@@ -180,7 +180,7 @@ function createLabelNode(el) {
 	}
 	
 	//Table
-	labelValue += "<div class=\"panel-body\"><table class=\"table\"></tr>";
+	labelValue += "<div class=\"panel-body\"><table class=\"table\"\"></tr>";
 
 	if (el.parallelism != "") {
 		labelValue += tableRow("Parallelism", el.parallelism);
@@ -220,14 +220,14 @@ function showProperties(nodeID) {
 	phtml += "<div class=\"row\">";
 	
 	phtml += "<div class=\"col-md-2\"><h4>Pact Properties</h4>";
-	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	phtml += "<table class=\"table\">";
 	phtml += tableRow("Operator", (node.driver_strategy == undefined ? "None" : node.driver_strategy));
 	phtml += tableRow("Parallelism", (node.parallelism == undefined ? "None" : node.parallelism));
 	phtml += tableRow("Subtasks-per-instance", (node.subtasks_per_instance == undefined ? "None" : node.subtasks_per_instance));
 	phtml += "</table></div>";
 	
 	phtml += "<div class=\"col-md-2\"><h4>Global Data Properties</h4>";
-	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	phtml += "<table class=\"table\">";
 	if (node.global_properties != null) {
 		for (var i = 0; i < node.global_properties.length; i++) {
 	    	var prop = node.global_properties[i];
@@ -239,7 +239,7 @@ function showProperties(nodeID) {
 	phtml += "</table></div>";
 
 	phtml += "<div class=\"col-md-2\"><h4>Local Data Properties</h4>";
-	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	phtml += "<table class=\"table\">";
 	if (node.local_properties != null) {
 		for (var i = 0; i < node.local_properties.length; i++) {
 			var prop = node.local_properties[i];
@@ -251,7 +251,7 @@ function showProperties(nodeID) {
 	phtml += "</table></div>";
 	
 	phtml += "<div class=\"col-md-2\"><h4>Size Estimates</h4>";
-	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	phtml += "<table class=\"table\">";
 	if (node.estimates != null) {
 		for (var i = 0; i < node.estimates.length; i++) {
 			var prop = node.estimates[i];
@@ -263,7 +263,7 @@ function showProperties(nodeID) {
 	phtml += "</table></div>";
 	
 	phtml += "<div class=\"col-md-2\"><h4>Cost Estimates</h4>";	
-	phtml += "<table class=\"table\"><tr><th>name</th><th>value</th></tr>";
+	phtml += "<table class=\"table\">";
 	if (node.costs != null) {
 		for (var i = 0; i < node.costs.length; i++) {
 	    	var prop = node.costs[i];
@@ -286,9 +286,18 @@ function searchForNode(nodeID) {
 		if (el.id == nodeID) {
 			return el;
 		}
+		//look for nodes that are in iterations
+		if (el.step_function != null) {
+			for (var j in el.step_function) {
+				if (el.step_function[j].id == nodeID) {
+					return el.step_function[j];	
+				}
+			}	
+		}
 	}
 }
 
+//searches for all nodes in the global JSONData, that are iterations
 function searchForIterationNodes() {
 	var itN = new Array();
 	for (var i in JSONData.nodes) {
