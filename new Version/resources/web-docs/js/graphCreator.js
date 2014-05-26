@@ -95,11 +95,8 @@ function drawGraph(data, svgID){
 //Responsible for adding nodes and edges
 function loadJsonToDagre(data){
 	
-	//stores all nodes that have been added so far
+	//stores all nodes that are in right graph -> no edges out of iterations!
 	var existingNodes = new Array;
-	
-	//stores all remaining Eges (predecessors did not exist from the beginning)
-	var remainingEdges = new Array;
 	
 	var g = new dagreD3.Digraph();
 	
@@ -114,7 +111,7 @@ function loadJsonToDagre(data){
 					if (existingNodes.indexOf(el.predecessors[j].id) != -1) {
 						g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
 					} else {
-						console.log("Not in graph yet: " + el.predecessors[j].id);
+						console.log("Nodes not in graph yet: " + el.predecessors[j].id);
 					}
 				}
 			}
@@ -130,7 +127,7 @@ function loadJsonToDagre(data){
 					if (existingNodes.indexOf(el.predecessors[j].id) != -1) {
 						g.addEdge(null, el.predecessors[j].id, el.id, { label: createLabelEdge(el.predecessors[j]) });	
 					} else {
-						console.log("Not in graph yet: " + el.predecessors[j].id);	
+						console.log("Nodes not in graph yet: " + el.predecessors[j].id);	
 					}
 				}
 			}
@@ -215,6 +212,7 @@ function extendLabelNodeForIteration(id) {
 }
 
 //presents properties for a given nodeID in the propertyCanvas
+//TODO: Change to support for iterations
 function showProperties(nodeID) {
 	$("#propertyCanvas").empty();
 	node = searchForNode(nodeID);
