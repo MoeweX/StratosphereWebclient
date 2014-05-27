@@ -61,6 +61,7 @@ function drawGraph(data, svgID){
 	 	//.attr("width", layout.graph().width + 40)
 	 	.attr("width", $(document).width() - 15)
 	 	//.attr("height", layout.graph().height + 40)
+	 	.attr("height", $(document).height() - 15 - 110)
 	 	.call(d3.behavior.zoom("#svg-main").on("zoom", function() {
      		var ev = d3.event;
      		svg.select("#svg-main g")
@@ -80,16 +81,15 @@ function drawGraph(data, svgID){
 	    layout = renderer.layout(layout).run(iterationGraphs[i], svgElement);
 	}
   		
-  	
-//  	activateClickEvents();
+  	//enable Overlays and register function for overlay-infos
+  	$("a[rel]").overlay({ 
+		onBeforeLoad: function(){ 
+   			var id = this.getTrigger().attr("nodeID")
+			showProperties(id);
+	 	}
+  	});
   	
   	}
-  	
-//function activateClickEvents() {
-//	$("#myPanel").on("click", function() {
-//		alert("You clicked" + $(this).attr("data"));
-//	});	
-//}
 
 //Creates the dagreD3 graph object
 //Responsible for adding nodes and edges
@@ -163,7 +163,10 @@ function createLabelNode(el) {
 		labelValue += "<div class=\"panel panel-info\">";
 	}
 	//Nodename
-	labelValue += "<div class=\"panel-heading\"><a class=\"clickLabel\" nodeID=\""+el.id+"\" href=\"#\"><h4 style=\"text-align: center\">" + el.pact + "</h4></a>";
+	//Old Solution with onclick
+//	labelValue += "<div class=\"panel-heading\"><a class=\"clickLabel\" nodeID=\""+el.id+"\" href=\"#\"><h4 style=\"text-align: center\">" + el.pact + "</h4></a>";
+	//New Solution with overlay
+	labelValue += "<div class=\"panel-heading\"><a nodeID=\""+el.id+"\" href=\"#\" rel=\"#propertyO\"><h4 style=\"text-align: center\">" + el.pact + "</h4></a>";
 	if (el.contents == "") {
 		labelValue += "</div>";
 	} else {
@@ -212,7 +215,6 @@ function extendLabelNodeForIteration(id) {
 }
 
 //presents properties for a given nodeID in the propertyCanvas
-//TODO: Change to support for iterations
 function showProperties(nodeID) {
 	$("#propertyCanvas").empty();
 	node = searchForNode(nodeID);
@@ -226,7 +228,7 @@ function showProperties(nodeID) {
 	phtml += tableRow("Subtasks-per-instance", (node.subtasks_per_instance == undefined ? "None" : node.subtasks_per_instance));
 	phtml += "</table></div>";
 	
-	phtml += "<div class=\"col-md-2\"><h4>Global Data Properties</h4>";
+	phtml += "<div class=\"col-md-3\"><h4>Global Data Properties</h4>";
 	phtml += "<table class=\"table\">";
 	if (node.global_properties != null) {
 		for (var i = 0; i < node.global_properties.length; i++) {
@@ -238,7 +240,7 @@ function showProperties(nodeID) {
 	}
 	phtml += "</table></div>";
 
-	phtml += "<div class=\"col-md-2\"><h4>Local Data Properties</h4>";
+	phtml += "<div class=\"col-md-3\"><h4>Local Data Properties</h4>";
 	phtml += "<table class=\"table\">";
 	if (node.local_properties != null) {
 		for (var i = 0; i < node.local_properties.length; i++) {
@@ -308,14 +310,6 @@ function searchForIterationNodes() {
 	}
 	return itN;
 }
-
-/**
- * More Infos from a job
- */
-$(document).on("click", ".clickLabel", function() {
-	var id = $(this).attr("nodeID");
-	showProperties(id);
-});
 
 //creates a row for a table with two collums
 function tableRow(nameX, valueX) {

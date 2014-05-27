@@ -19,18 +19,21 @@
   <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/nephelefrontend.css" />
   <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/pactgraphs.css" />
   <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/graph.css" />
+  <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/overlay.css" />
   <link rel="stylesheet" type="text/css" href="../resources/web-docs/css/bootstrap.css" /> <!-- Changed stuff -->
   <script type="text/javascript" src="../resources/web-docs/js/jquery-2.1.0.js"></script>
   <script type="text/javascript" src="../resources/web-docs/js/graphCreator.js"></script>
   <script type="text/javascript" src="../resources/web-docs/js/d3.js" charset="utf-8"></script>
   <script type="text/javascript" src="../resources/web-docs/js/dagre-d3.js"></script>
   <script type="text/javascript" src="../resources/web-docs/js/bootstrap.min.js"></script>
+  <script src="http://cdn.jquerytools.org/1.2.7/full/jquery.tools.min.js"></script> <!-- Todo changes to local -->
+
 <body>
   <div class="mainHeading">
     <h1 style="margin-top:0"><img src="../resources/web-docs/img/StratosphereLogo.png" width="326" height="100" alt="Stratosphere Logo" align="middle"/>Stratosphere Plan Visualizer</h1>
   </div>
     <div>
-      <div id="mainCanvas" class="canvas boxed" style="height: 500px;">
+      <div id="mainCanvas" class="canvas boxed">
         <div><h3>Paste the plan data here</h3></div>
         <div align="center"><textarea id="plantext" style="width: 600px; height: 400px;"></textarea></div>
         <div align="center"; style="float: bottom;"> 
@@ -38,12 +41,16 @@
         </div>
       </div>
     </div>
-    <div id="propertyCanvas" class="propertyCanvas">
-      <p class="fadedPropertiesText">Click a node name to show the properties...</p>
-    </div>
+    <div class="simple_overlay" id="propertyO">
+	  <div id="propertyCanvas" class="propertyCanvas">
+	  </div>
+	</div>
     <script type="text/javascript">
 
       $(document).ready(function() {
+		
+	  	//change height of mainCanvas to maximum
+	  	$("#mainCanvas").css("height", $(document).height() - 15 - 105);
 
         $('#draw_button').click(function () {
           var planData = $("textarea#plantext").val();
