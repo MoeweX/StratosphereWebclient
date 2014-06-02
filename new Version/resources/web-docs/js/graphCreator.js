@@ -221,14 +221,14 @@ function showProperties(nodeID) {
 	var phtml = "<div><h3>Properties of "+ shortenString(node.contents) + " - ID = " + nodeID + "</h3>";
 	phtml += "<div class=\"row\">";
 	
-	phtml += "<div class=\"col-md-2\"><h4>Pact Properties</h4>";
+	phtml += "<div class=\"col-md-4\"><h4>Pact Properties</h4>";
 	phtml += "<table class=\"table\">";
 	phtml += tableRow("Operator", (node.driver_strategy == undefined ? "None" : node.driver_strategy));
 	phtml += tableRow("Parallelism", (node.parallelism == undefined ? "None" : node.parallelism));
 	phtml += tableRow("Subtasks-per-instance", (node.subtasks_per_instance == undefined ? "None" : node.subtasks_per_instance));
 	phtml += "</table></div>";
 	
-	phtml += "<div class=\"col-md-3\"><h4>Global Data Properties</h4>";
+	phtml += "<div class=\"col-md-4\"><h4>Global Data Properties</h4>";
 	phtml += "<table class=\"table\">";
 	if (node.global_properties != null) {
 		for (var i = 0; i < node.global_properties.length; i++) {
@@ -240,7 +240,7 @@ function showProperties(nodeID) {
 	}
 	phtml += "</table></div>";
 
-	phtml += "<div class=\"col-md-3\"><h4>Local Data Properties</h4>";
+	phtml += "<div class=\"col-md-4\"><h4>Local Data Properties</h4>";
 	phtml += "<table class=\"table\">";
 	if (node.local_properties != null) {
 		for (var i = 0; i < node.local_properties.length; i++) {
@@ -250,9 +250,10 @@ function showProperties(nodeID) {
 	} else {
 		phtml += tableRow("Local Properties", "None");
 	}
-	phtml += "</table></div>";
+	phtml += "</table></div></div>";
 	
-	phtml += "<div class=\"col-md-2\"><h4>Size Estimates</h4>";
+	phtml += "<div class=\"row\">";
+	phtml += "<div class=\"col-md-6\"><h4>Size Estimates</h4>";
 	phtml += "<table class=\"table\">";
 	if (node.estimates != null) {
 		for (var i = 0; i < node.estimates.length; i++) {
@@ -264,7 +265,7 @@ function showProperties(nodeID) {
 	}
 	phtml += "</table></div>";
 	
-	phtml += "<div class=\"col-md-2\"><h4>Cost Estimates</h4>";	
+	phtml += "<div class=\"col-md-6\"><h4>Cost Estimates</h4>";	
 	phtml += "<table class=\"table\">";
 	if (node.costs != null) {
 		for (var i = 0; i < node.costs.length; i++) {
